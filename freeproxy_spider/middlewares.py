@@ -13,7 +13,7 @@ from scrapy.utils.response import response_status_message
 
 class TooManyRequestsRetryMiddleware(RetryMiddleware):
     def process_response(self, request, response, spider):
-        # Если код ответа 429, ждем 16 секунд перед повторным запросом
+        # Если код ответа 429, ждем 10 секунд перед повторным запросом
         if response.status == 429:
             # Получаем количество уже сделанных попыток
             retries = request.meta.get('retry_times', 0)
@@ -26,10 +26,10 @@ class TooManyRequestsRetryMiddleware(RetryMiddleware):
             # Увеличиваем счётчик попыток
             request.meta['retry_times'] = retries + 1
 
-            # Логируем, что мы ждем 16 секунд перед повтором
+            # Логируем, что мы ждем 10 секунд перед повтором
             spider.logger.warning(
                 f"Получен 429 для {response.url}. Ожидание 16 секунд перед повторной попыткой (попытка {retries + 1}).")
-            time.sleep(16)  # Ожидание 16 секунд
+            time.sleep(16)  # Ожидание 10 секунд
 
             # Попробуем повторить запрос
             retryreq = self._retry(request, f"429 Too Many Requests (попытка {retries + 1})", spider)
